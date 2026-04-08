@@ -4,20 +4,18 @@ const helmet = require('helmet');
 const axios = require('axios');
 const cheerio = require('cheerio');
 require('dotenv').config();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: false, // Allow external site embeddings/calls if needed
+}));
 app.use(cors());
 app.use(express.json());
 
-// Gemini AI Setup
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// Caching for prices
+// Market Prices Cache
 let cachedPrices = {
     boiGordo: { price: '---', date: '---', trend: 'neutral' },
     bezerro: { price: '---', date: '---', trend: 'neutral' },
@@ -26,14 +24,19 @@ let cachedPrices = {
 
 async function updatePrices() {
     try {
-        // Fetch CEPEA Boi Gordo
-        const boiRes = await axios.get('https://www.cepea.esalq.usp.br/br/indicador/boi-gordo.aspx');
+        console.log('Fetching market prices...');
+        // CEPEA Boi Gordo
+        const boiRes = await axios.get('https://www.cepea.esalq.usp.br/br/indicador/boi-gordo.aspx', {
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
         const $boi = cheerio.load(boiRes.data);
         const boiPrice = $boi('#imagenet-indicador-1 tbody tr:first-child td:nth-child(2)').text().trim();
         const boiDate = $boi('#imagenet-indicador-1 tbody tr:first-child td:nth-child(1)').text().trim();
         
-        // Fetch CEPEA Bezerro
-        const bezRes = await axios.get('https://www.cepea.esalq.usp.br/br/indicador/bezerro.aspx');
+        // CEPEA Bezerro
+        const bezRes = await axios.get('https://www.cepea.esalq.usp.br/br/indicador/bezerro.aspx', {
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
         const $bez = cheerio.load(bezRes.data);
         const bezPrice = $bez('#imagenet-indicador-1 tbody tr:first-child td:nth-child(2)').text().trim();
         const bezDate = $bez('#imagenet-indicador-1 tbody tr:first-child td:nth-child(1)').text().trim();
@@ -49,10 +52,11 @@ async function updatePrices() {
     }
 }
 
-// Update prices every 1 hour
+// Initial fetch and interval (1 hour)
+updatePrices();
 setInterval(updatePrices, 3600000);
-updatePrices(); // Initial fetch
 
+// Endpoints
 app.get('/api/prices', (req, res) => {
     res.json(cachedPrices);
 });
@@ -60,31 +64,35 @@ app.get('/api/prices', (req, res) => {
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, systemPrompt } = req.body;
+        const apiKey = process.env.OPENROUTER_API_KEY;
 
-        if (!message) {
-            return res.status(400).json({ error: 'Message is required' });
+        if (!apiKey) {
+            return res.status(500).json({ error: 'OpenRouter API Key not configured' });
         }
 
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-1.5-flash",
-            systemInstruction: systemPrompt
+        const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+            model: "google/gemini-2.0-flash-exp:free",
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: message }
+            ]
+        }, {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://meat-equity.vercel.app',
+                'X-Title': 'Meat Equity Platform',
+                'Content-Type': 'application/json'
+            }
         });
 
-        const result = await model.generateContent(message);
-        const response = await result.response;
-        const text = response.text();
-
+        const text = response.data.choices[0].message.content;
         res.json({ text });
     } catch (error) {
-        console.error('Gemini API Error:', error);
+        console.error('OpenRouter Error:', error.response?.data || error.message);
         res.status(500).json({ error: 'Failed to generate response' });
     }
 });
 
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok' });
-});
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+app.listen(port, () => console.log(`Server running on port ${port}`));

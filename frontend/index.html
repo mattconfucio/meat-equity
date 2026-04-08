@@ -54,6 +54,18 @@
         .col-period { text-align: left; font-weight: bold; color: #1a2d1e; background-color: #f9f6f0 !important; }
         .nelore-img { max-width: 100%; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); transition: transform 0.5s ease; }
         .nelore-img:hover { transform: scale(1.02); }
+
+        #chat-widget {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(120%) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #chat-widget.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body class="antialiased font-sans">
@@ -61,9 +73,8 @@
     <!-- MARKET TICKER -->
     <div class="ticker-wrap fixed top-0 w-full z-[100]">
         <div class="ticker" id="tickerContent">
-            <span class="ticker-item">BOI GORDO SP (CEPEA): R$ ---</span>
-            <span class="ticker-item">BEZERRO MS (CEPEA): R$ ---</span>
-            <span class="ticker-item">MEAT EQUITY: BIOMASSA REAL</span>
+            <span class="ticker-item">CARREGANDO COTAÇÕES DO DIA...</span>
+            <span class="ticker-item">MEAT EQUITY: ENGENHARIA DE ATIVOS BIOLÓGICOS</span>
         </div>
     </div>
 
@@ -101,12 +112,12 @@
                 <div class="bg-brand-cream p-6 rounded-2xl border-l-4 border-brand-gold shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase mb-1">Boi Gordo SP (CEPEA)</p>
                     <div class="text-2xl font-bold text-brand-dark" id="priceBoi">---</div>
-                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBoi">Atualizando...</p>
+                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBoi">Sincronizando...</p>
                 </div>
                 <div class="bg-brand-cream p-6 rounded-2xl border-l-4 border-brand-forest shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase mb-1">Bezerro MS (CEPEA)</p>
                     <div class="text-2xl font-bold text-brand-dark" id="priceBez">---</div>
-                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBez">Atualizando...</p>
+                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBez">Sincronizando...</p>
                 </div>
                 <div class="bg-brand-cream p-6 rounded-2xl border-l-4 border-brand-gold shadow-sm">
                     <p class="text-xs font-bold text-gray-400 uppercase mb-1">Alvo Biomassa (P7)</p>
@@ -122,13 +133,16 @@
         </div>
     </section>
 
-    <!-- TESE EXAUSTIVA E DETALHADA -->
-    <section id="tese" class="py-24 bg-brand-cream">
+    <!-- TESE EXAUSTIVA -->
+    <div id="tese">
+    <section class="py-24 bg-brand-cream">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 max-w-4xl mx-auto">
                 <h2 class="font-serif text-4xl md:text-5xl text-brand-dark font-bold mb-6">Estratégia de Acúmulo de Biomassa em Cascata</h2>
                 <div class="h-1 w-20 bg-brand-gold mx-auto mb-8"></div>
-                <p class="text-gray-600 text-lg text-justify">O Projeto Meat Equity não é um fundo de investimento tradicional baseado em especulação de preços. É uma operação de engenharia de ativos biológicos focada na produção industrial de quilos de carne através de ciclos tecnológicos de engorda, venda e reinvestimento.</p>
+                <p class="text-gray-600 text-lg text-justify leading-relaxed">
+                    O Projeto Meat Equity não é um fundo de investimento tradicional baseado em especulação de preços. É uma operação de engenharia de ativos biológicos focada na produção industrial de quilos de carne através de ciclos tecnológicos de engorda, venda total (liquidação) e reinvestimento estratégico de lucros.
+                </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto mb-20">
@@ -136,35 +150,32 @@
                 <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-gold">
                     <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">1. Filosofia: Ativo Físico vs. Volatilidade</h3>
                     <p class="text-gray-600 text-justify leading-relaxed">
-                        A maioria dos investidores foca no preço da arroba. O Meat Equity foca na quantidade de quilos. Enquanto o mercado financeiro depende de fatores externos, a biologia é intrínseca: o gado tecnificado ganha peso independentemente da bolsa. Ao transformar 10.000 kg em 76.192 kg, criamos uma blindagem física. Se o preço da carne cair, o aumento massivo da biomassa compensa a queda, protegendo e multiplicando seu patrimônio real.
+                        Enquanto o mercado financeiro depende de fatores extrínsecos, a biologia é intrínseca. O gado tecnificado ganha peso independentemente da bolsa de valores. Ao transformar 10.000 kg em 76.192 kg, criamos uma proteção física: o aumento massivo da biomassa compensa eventuais quedas de preço, blindando o capital principal do investidor.
                     </p>
                 </div>
 
                 <!-- 2. A Engrenagem dos Ciclos -->
                 <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-forest">
                     <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">2. A Engrenagem dos Ciclos</h3>
-                    <p class="text-gray-600 text-justify leading-relaxed mb-4">
-                        O custo operacional é calculado sobre o patrimônio inicial em estoque no início de cada ciclo (ex: 200kg por animal).
-                    </p>
                     <div class="space-y-4">
                         <div class="p-4 bg-brand-cream rounded-xl">
                             <span class="font-bold text-brand-gold uppercase text-xs">Fase de Aceleração (Ciclo 1):</span>
-                            <p class="text-sm text-gray-700">Custo: R$ 6,00/kg. <strong>100% da engorda é do Cotista.</strong> A Empresa abre mão da margem para garantir o Payback e formar sua base patrimonial rapidamente.</p>
+                            <p class="text-sm text-gray-700">Custo operacional de R$ 6,00/kg. <strong>100% da engorda é do Cotista</strong>, priorizando o Payback imediato e a formação rápida de base patrimonial.</p>
                         </div>
                         <div class="p-4 bg-brand-forest/5 rounded-xl">
                             <span class="font-bold text-brand-forest uppercase text-xs">Fase de Performance (Ciclos 2+):</span>
-                            <p class="text-sm text-gray-700">Custo: R$ 1,25/kg. <strong>Partilha de 50/50.</strong> Com a base tecnológica formada, o custo de manutenção cai e o lucro é dividido entre a Empresa e o Cotista.</p>
+                            <p class="text-sm text-gray-700">Custo de manutenção reduzido para R$ 1,25/kg. <strong>Partilha de 50/50</strong> do lucro biológico entre a Empresa e o Cotista.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. A Dinâmica da Cascata -->
+                <!-- 3. Dinâmica de Liquidação -->
                 <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-gold md:col-span-2">
                     <div class="grid lg:grid-cols-3 gap-8 items-center">
                         <div class="lg:col-span-2">
                             <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">3. Dinâmica de Liquidação e Reinvestimento</h3>
                             <p class="text-gray-600 text-justify leading-relaxed">
-                                Ao final de cada ciclo de 150 dias, o rebanho <strong>não migra fisicamente</strong>; ele é integralmente <strong>liquidado (vendido)</strong>. Este é o ponto crucial para a saúde financeira do projeto. O capital correspondente ao patrimônio principal é reinvestido na compra de novos lotes tecnológicos para os ciclos de performance. Já o lucro biológico (a engorda convertida em dinheiro) é destinado exclusivamente à aquisição de novos animais que reiniciam o Ciclo 1. Esse processo cria uma "fábrica" onde o lucro de hoje financia a expansão produtiva de amanhã.
+                                Este não é um lote estático. Ao final de cada ciclo de 150 dias, o rebanho é integralmente <strong>liquidado (vendido)</strong>. O capital correspondente ao patrimônio principal é reinvestido em um novo lote tecnológico (recompra). Já o lucro biológico convertido é destinado exclusivamente à aquisição de novos animais que reiniciam o Ciclo 1. Essa "engrenagem de compra e venda" garante liquidez periódica e escala geométrica.
                             </p>
                         </div>
                         <div class="flex justify-center">
@@ -173,56 +184,20 @@
                     </div>
                 </div>
 
-                <!-- 4. Exemplo Prático -->
-                <div class="bg-brand-dark p-10 rounded-3xl shadow-xl text-white md:col-span-2">
-                    <h3 class="font-serif text-2xl font-bold text-brand-gold mb-6 text-center">4. Exemplo Prático de Evolução (Lote 200kg)</h3>
-                    <div class="grid md:grid-cols-2 gap-12">
-                        <div class="border-r border-white/10 pr-8">
-                            <h4 class="font-bold text-brand-sage uppercase text-sm mb-4">Ciclo 1 (Aceleração)</h4>
-                            <ul class="space-y-2 text-sm">
-                                <li class="flex justify-between"><span>Patrimônio Inicial:</span> <span>200 kg</span></li>
-                                <li class="flex justify-between"><span>Investimento (R$ 6/kg):</span> <span>R$ 1.200,00</span></li>
-                                <li class="flex justify-between text-brand-gold font-bold"><span>Ganho Biológico (50%):</span> <span>+100 kg</span></li>
-                                <li class="flex justify-between border-t border-white/20 pt-2 font-bold text-lg"><span>Saldo Cotista:</span> <span>300 kg</span></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-brand-sage uppercase text-sm mb-4">Ciclo 2 (Performance)</h4>
-                            <ul class="space-y-2 text-sm">
-                                <li class="flex justify-between"><span>Patrimônio Inicial:</span> <span>300 kg</span></li>
-                                <li class="flex justify-between"><span>Manutenção (R$ 1,25/kg):</span> <span>R$ 375,00</span></li>
-                                <li class="flex justify-between text-brand-gold font-bold"><span>Ganho Biológico (50%):</span> <span>+150 kg</span></li>
-                                <li class="flex justify-between italic"><span>Divisão (50/50):</span> <span>75kg Empresa / 75kg Cotista</span></li>
-                                <li class="flex justify-between border-t border-white/20 pt-2 font-bold text-lg"><span>Patrimônio Acumulado:</span> <span>375 kg</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5. Segurança -->
+                <!-- 4. Segurança -->
                 <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-forest">
-                    <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">5. Segurança e Mitigação de Riscos</h3>
+                    <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">4. Segurança e Blindagem</h3>
                     <ul class="space-y-4 text-sm text-gray-600">
-                        <li class="flex items-start gap-3 text-justify">
-                            <i class="fa-solid fa-shield-heart text-brand-gold mt-1"></i>
-                            <span><strong>Lastro Real:</strong> Investimento lastreado em gado vivo, segurável e com liquidez imediata.</span>
-                        </li>
-                        <li class="flex items-start gap-3 text-justify">
-                            <i class="fa-solid fa-users-viewfinder text-brand-gold mt-1"></i>
-                            <span><strong>Diluição de Mortalidade:</strong> O crescimento do número de cabeças dilui estatisticamente o risco de perda por morte.</span>
-                        </li>
-                        <li class="flex items-start gap-3 text-justify">
-                            <i class="fa-solid fa-dna text-brand-gold mt-1"></i>
-                            <span><strong>Blindagem Tecnológica:</strong> Reservas reinvestidas garantem o melhor em genética, nutrição e monitoramento.</span>
-                        </li>
+                        <li class="flex items-start gap-3 text-justify"><i class="fa-solid fa-shield-check text-brand-gold mt-1"></i><span><strong>Lastro Real:</strong> Investimento em ativo biológico vivo com liquidez de mercado e cobertura segurável.</span></li>
+                        <li class="flex items-start gap-3 text-justify"><i class="fa-solid fa-chart-line text-brand-gold mt-1"></i><span><strong>Estatística:</strong> A escala industrial dilui riscos de mortalidade e garante estabilidade produtiva.</span></li>
                     </ul>
                 </div>
 
-                <!-- 6. Conclusão -->
+                <!-- 5. Visão Futura -->
                 <div class="bg-brand-forest p-10 rounded-3xl shadow-lg text-white">
-                    <h3 class="font-serif text-2xl font-bold text-brand-gold mb-4">6. Conclusão: A Tese Final</h3>
+                    <h3 class="font-serif text-2xl font-bold text-brand-gold mb-4">5. Conclusão: Eficiência Industrial</h3>
                     <p class="italic text-brand-cream text-justify leading-relaxed">
-                        "O Projeto Meat Equity transforma o gado em uma unidade industrial de alta performance. Ao calcular o custo sobre o patrimônio inicial e realizar a liquidação periódica para reinvestimento, trazemos previsibilidade absoluta e escala geométrica ao investidor. É onde a biologia encontra a engenharia financeira de elite."
+                        Transformamos o rebanho em uma unidade industrial de alta performance. Com liquidez a cada 150 dias e reinvestimento estruturado, trazemos o rigor financeiro de M&A para dentro do campo.
                     </p>
                 </div>
             </div>
@@ -239,11 +214,11 @@
                             <tr>
                                 <th>Ciclo</th>
                                 <th>Período</th>
-                                <th>C1 (100% Cotista)</th>
-                                <th>C2 (Partilha)</th>
-                                <th>C3 (Partilha)</th>
-                                <th>C4 (Partilha)</th>
-                                <th>C5+ (Partilha)</th>
+                                <th>C1 (Aceleração)</th>
+                                <th>C2 (Performance)</th>
+                                <th>C3 (Performance)</th>
+                                <th>C4 (Performance)</th>
+                                <th>C5+ (Performance)</th>
                                 <th>Engorda Total</th>
                                 <th>Saldo Final (KG)</th>
                             </tr>
@@ -259,10 +234,10 @@
                         </tbody>
                     </table>
                 </div>
-                <p class="mt-4 text-xs text-brand-sage text-center uppercase tracking-widest font-bold">Valores baseados na Liquidação e Recompra Estruturada</p>
             </div>
         </div>
     </section>
+    </div>
 
     <!-- SIMULADOR INTERATIVO -->
     <section id="simulador" class="py-24 bg-white">
@@ -271,50 +246,71 @@
                 <div class="bg-brand-forest p-10 lg:w-1/3 text-white">
                     <h3 class="text-xl font-bold mb-6 text-brand-gold">Aporte Inicial (KG)</h3>
                     <input type="number" id="inputKg" value="10000" class="w-full bg-brand-dark border border-brand-sage/30 text-white rounded-lg p-4 mb-6 text-xl">
-                    <button onclick="calculateCascade()" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-lg uppercase tracking-wider hover:bg-white transition">Simular Projeção</button>
-                    <div class="mt-8 text-[10px] text-brand-sage uppercase leading-relaxed text-justify">
-                        Nota: Simulação reflete reinvestimento estrutural de lucros após liquidação periódica.
-                    </div>
+                    <button onclick="calculateCascade()" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-lg uppercase tracking-wider hover:bg-white transition shadow-lg">Simular Projeção</button>
+                    <div class="mt-8 text-[10px] text-brand-sage uppercase leading-relaxed text-justify">Nota: Cálculo reflete reinvestimento após liquidação periódica total.</div>
                 </div>
                 <div class="p-10 lg:w-2/3 bg-white">
                     <div class="flex justify-between items-end mb-8">
                         <div><p class="text-sm font-bold text-gray-400 uppercase">Patrimônio Final</p><div class="font-serif text-5xl font-bold text-brand-dark mt-1" id="finalResult">76.192,5 <span class="text-xl text-gray-500 font-sans font-normal">kg</span></div></div>
                         <div class="text-right"><p class="text-sm font-bold text-gray-400 uppercase">Multiplicador</p><div class="text-3xl font-bold text-brand-forest mt-1 bg-brand-forest/10 px-4 py-1 rounded-lg">7.6x</div></div>
                     </div>
-                    <div class="h-64 border-b-2 border-gray-100 flex items-end justify-between gap-2 pb-2 relative" id="chartContainer"></div>
+                    <div class="h-64 border-b-2 border-gray-100 flex items-end justify-between gap-1 pb-2 relative" id="chartContainer"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CHAT (FAB) -->
-    <button onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-brand-gold text-brand-dark rounded-full shadow-2xl flex justify-center items-center text-2xl z-40"><i class="fa-solid fa-robot"></i></button>
-    <div id="chat-widget" class="fixed bottom-28 right-6 w-[380px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden h-[500px]">
-        <div class="bg-brand-forest p-4 text-white flex justify-between items-center"><h4 class="font-bold font-serif">Consultor Meat Equity</h4><button onclick="toggleChat()"><i class="fa-solid fa-times"></i></button></div>
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-4 text-sm">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-justify">Bem-vindo. Tire suas dúvidas sobre as minúcias da <strong>Liquidação e Reinvestimento Estrutural</strong> de lucros biológicos.</div>
+    <!-- FOOTER & CHAT -->
+    <footer class="bg-brand-dark text-white py-16 border-t border-white/10 text-center">
+        <h2 class="font-serif text-3xl mb-8">Consulte nossa inteligência.</h2>
+        <button onclick="toggleChat()" class="border border-brand-gold text-brand-gold px-10 py-3 rounded-full hover:bg-brand-gold hover:text-brand-dark transition font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 mx-auto">
+            <i class="fa-solid fa-robot"></i> Abrir Consultor
+        </button>
+        <p class="mt-16 text-xs text-brand-sage/50">© 2026 Meat Equity. Engenharia Financeira Aplicada ao Campo.</p>
+    </footer>
+
+    <!-- FLOAT CHAT FAB -->
+    <button onclick="toggleChat()" id="chat-fab" class="fixed bottom-6 right-6 w-16 h-16 bg-brand-gold text-brand-dark rounded-full shadow-2xl flex justify-center items-center text-2xl z-40 hover:scale-105 transition">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <!-- CHAT WIDGET -->
+    <div id="chat-widget" class="fixed bottom-28 right-6 w-[400px] max-w-[calc(100vw-48px)] bg-white rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden h-[550px]">
+        <div class="bg-brand-forest p-5 text-white flex justify-between items-center">
+            <h4 class="font-bold font-serif text-lg">Consultor Meat Equity</h4>
+            <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-lg"><i class="fa-solid fa-times"></i></button>
         </div>
-        <div class="p-3 bg-white border-t border-gray-100 flex gap-2"><input type="text" id="chat-input" placeholder="Mensagem..." class="flex-1 bg-gray-100 px-4 py-3 rounded-xl focus:outline-none"><button onclick="sendChatMessage()" class="w-12 h-12 bg-brand-forest text-white rounded-xl flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button></div>
+        <div id="chat-messages" class="flex-1 p-5 overflow-y-auto bg-gray-50 flex flex-col gap-4 text-sm">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-justify italic">
+                Olá. Estou pronto para detalhar a matemática da <strong>Liquidação e Reinvestimento</strong> com base nas cotações CEPEA atuais.
+            </div>
+        </div>
+        <div class="p-4 bg-white border-t border-gray-100 flex gap-2">
+            <input type="text" id="chat-input" placeholder="Pergunte sobre a tese..." class="flex-1 bg-gray-100 px-5 py-3 rounded-2xl focus:outline-none">
+            <button onclick="sendChatMessage()" class="w-12 h-12 bg-brand-forest text-white rounded-2xl flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
     </div>
 
     <script>
+        const API_BASE = "https://meat-equity-backend.onrender.com";
+
         async function fetchMarketPrices() {
             try {
-                const response = await fetch('/api/prices');
+                const response = await fetch(`${API_BASE}/api/prices`);
                 if (!response.ok) return;
                 const data = await response.json();
                 document.getElementById('priceBoi').innerText = data.boiGordo.price;
-                document.getElementById('dateBoi').innerText = `Ref: ${data.boiGordo.date}`;
+                document.getElementById('dateBoi').innerText = `Data: ${data.boiGordo.date}`;
                 document.getElementById('priceBez').innerText = data.bezerro.price;
-                document.getElementById('dateBez').innerText = `Ref: ${data.bezerro.date}`;
+                document.getElementById('dateBez').innerText = `Data: ${data.bezerro.date}`;
                 document.getElementById('tickerContent').innerHTML = `
                     <span class="ticker-item">BOI GORDO SP (CEPEA): ${data.boiGordo.price} (${data.boiGordo.date})</span>
                     <span class="ticker-item">BEZERRO MS (CEPEA): ${data.bezerro.price} (${data.bezerro.date})</span>
-                    <span class="ticker-item">MEAT EQUITY: MODELO DE LIQUIDAÇÃO TOTAL E REINVESTIMENTO ESTRUTURADO</span>
+                    <span class="ticker-item">ALVO MEAT EQUITY: x7.6 BIOMASSA FISICA | LIQUIDEZ RESTRUTURADA</span>
                 `;
-            } catch (e) {}
+            } catch (e) { console.error("Error connecting to Render API"); }
         }
-        setInterval(fetchMarketPrices, 600000); fetchMarketPrices();
+        setInterval(fetchMarketPrices, 300000); fetchMarketPrices();
 
         function calculateCascade() {
             const initialKg = parseFloat(document.getElementById('inputKg').value);
@@ -323,7 +319,6 @@
         }
         function updateUI(initialKg, historyTotals) {
             const finalTotal = 76192.5 * (initialKg / 10000);
-            const multiplier = (finalTotal / initialKg).toFixed(1);
             document.getElementById('finalResult').innerText = finalTotal.toLocaleString('pt-BR') + " kg";
             const container = document.getElementById('chartContainer'); container.innerHTML = '';
             historyTotals.forEach((val) => {
@@ -333,22 +328,43 @@
         }
         window.onload = () => { calculateCascade(); };
 
-        function toggleChat() { document.getElementById('chat-widget').classList.toggle('active'); }
+        function toggleChat() { 
+            const widget = document.getElementById('chat-widget');
+            widget.classList.toggle('active');
+            console.log("Chat toggled. Active:", widget.classList.contains('active'));
+        }
+
         async function sendChatMessage() {
             const inp = document.getElementById('chat-input');
             const msg = inp.value.trim(); if (!msg) return;
             const chatOut = document.getElementById('chat-messages');
-            chatOut.innerHTML += `<div class="bg-brand-forest text-white p-3 rounded-xl self-end max-w-[85%]">${msg}</div>`;
+            chatOut.innerHTML += `<div class="bg-brand-forest text-white p-3 rounded-2xl self-end max-w-[85%]">${msg}</div>`;
             inp.value = '';
-            const systemPrompt = `Você é o Consultor Meat Equity. Explique a Liquidação Total:
-            Ao final de cada ciclo, todo o gado é vendido. O principal é reinvestido em um novo lote tecnológico. 
-            O lucro é injetado no Ciclo 1 (novos animais). 
-            Use tom elegante e didático seguindo os 6 pilares da tese.`;
-            const res = await fetch("/api/chat", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, systemPrompt }) });
-            const data = await res.json();
-            chatOut.innerHTML += `<div class="bg-white p-3 rounded-xl border border-brand-gold/30 self-start max-w-[90%] text-justify">${data.text}</div>`;
+            
+            const systemPrompt = `Você é o Consultor Meat Equity. Explique a Liquidação Periódica:
+            1. Venda total do lucro biológico a cada 150 dias. 
+            2. Reinvestimento do principal em novos lotes tecnológicos. 
+            3. Lucro direcionado à compra de novos bezerros (Ciclo 1). 
+            4. Use tom premium e institucional.`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg, systemPrompt })
+                });
+                const data = await res.json();
+                chatOut.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-brand-gold/30 self-start max-w-[90%] text-justify">${data.text}</div>`;
+            } catch (e) {
+                chatOut.innerHTML += `<div class="text-red-500 text-xs p-2">Erro de conexão com o consultor. Verifique a chave API no backend.</div>`;
+            }
             chatOut.scrollTop = chatOut.scrollHeight;
         }
+        
+        // Handle Enter key in chat
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
     </script>
 </body>
 </html>

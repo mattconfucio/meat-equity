@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meat Equity | Engenharia de Ativos Biológicos</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -14,19 +15,9 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
                     colors: {
-                        brand: {
-                            dark: '#0a120c',
-                            forest: '#1a2d1e',
-                            gold: '#d4af37',
-                            goldlight: '#e5c158',
-                            sage: '#8a9a8f',
-                            cream: '#f9f6f0'
-                        }
+                        brand: { dark: '#0a120c', forest: '#1a2d1e', gold: '#d4af37', goldlight: '#e5c158', sage: '#8a9a8f', cream: '#f9f6f0' }
                     }
                 }
             }
@@ -35,336 +26,216 @@
     <style>
         body { background-color: #f9f6f0; color: #333; }
         .hero-section { position: relative; background-color: #0a120c; color: white; overflow: hidden; }
-        .hero-image-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-color: #1a2d1e; }
+        .hero-image-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(10,18,12,0.85) 0%, rgba(26,45,30,0.6) 100%); z-index: 1; }
         .content-z { position: relative; z-index: 10; }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1); }
         .gold-gradient-text { background: linear-gradient(to right, #d4af37, #f3e5ab); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .text-justify { text-align: justify; text-justify: inter-word; }
-        .ticker-wrap { width: 100%; overflow: hidden; background-color: #0a120c; padding: 10px 0; border-bottom: 2px solid #d4af37; }
-        .ticker { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 30s linear infinite; }
-        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .ticker-wrap { width: 100%; overflow: hidden; background-color: #0a120c; padding: 10px 0; border-bottom: 2px solid #d4af37; z-index: 100; }
+        .ticker { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 40s linear infinite; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-103%, 0, 0); } }
         .ticker-item { display: inline-block; padding: 0 2rem; color: #d4af37; font-weight: bold; font-size: 0.9rem; }
         .table-container { overflow-x: auto; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background-color: #1a2d1e; color: #d4af37; text-transform: uppercase; font-size: 0.75rem; padding: 1rem; border: 1px solid #333; }
-        td { background-color: #fff; padding: 0.8rem; border: 1px solid #eee; text-align: center; font-size: 0.85rem; color: #666; }
-        tr:nth-child(even) td { background-color: #fcfcfc; }
-        .hl-row { background-color: #fdf8e8 !important; font-weight: bold; color: #000; }
-        .col-period { text-align: left; font-weight: bold; color: #1a2d1e; background-color: #f9f6f0 !important; }
-        .nelore-img { max-width: 100%; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); transition: transform 0.5s ease; }
-        .nelore-img:hover { transform: scale(1.02); }
-
-        #chat-widget {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: translateY(120%) scale(0.9);
-            opacity: 0;
-            pointer-events: none;
-        }
-        #chat-widget.active {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
+        td { background-color: #fff; padding: 0.8rem; border: 1px solid #eee; text-align: center; font-size: 0.85rem; }
+        .hl-row { background-color: #fdf8e8 !important; font-weight: bold; }
+        #chat-widget { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(120%) scale(0.9); opacity: 0; pointer-events: none; }
+        #chat-widget.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+        .nelore-img { max-width: 100%; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); }
     </style>
 </head>
 <body class="antialiased font-sans">
 
-    <!-- MARKET TICKER -->
+    <!-- TICKER -->
     <div class="ticker-wrap fixed top-0 w-full z-[100]">
         <div class="ticker" id="tickerContent">
-            <span class="ticker-item">CARREGANDO COTAÇÕES DO DIA...</span>
-            <span class="ticker-item">MEAT EQUITY: ENGENHARIA DE ATIVOS BIOLÓGICOS</span>
+            <span class="ticker-item">BOI GORDO SP: R$ ---</span>
+            <span class="ticker-item">BEZERRO MS: R$ ---</span>
+            <span class="ticker-item">BIOMASSA SOB GESTÃO: 284.150 KG</span>
+            <span class="ticker-item">MEAT EQUITY: BIOMASSA INTRÍNSECA E REAL</span>
         </div>
     </div>
 
-    <!-- HERO SECTION -->
+    <!-- HERO -->
     <section class="hero-section min-h-screen flex items-center pt-32 pb-20 relative">
-        <div class="hero-image-container">
-            <img src="nelore1.png" alt="Nelore Elite" class="w-full h-full object-cover opacity-30 object-center">
-        </div>
+        <div class="hero-image-container"><img src="nelore1.png" class="w-full h-full object-cover opacity-30"></div>
         <div class="hero-overlay"></div>
-        
         <div class="container mx-auto px-6 content-z">
             <div class="max-w-4xl">
-                <div class="inline-block px-4 py-1 border border-brand-gold text-brand-gold text-xs font-bold tracking-widest uppercase rounded-full mb-6">
-                    M&A de Ativos Biológicos
-                </div>
-                <h1 class="font-serif text-5xl md:text-7xl font-bold leading-tight mb-6">
-                    A Evolução do <br><span class="gold-gradient-text">Patrimônio Físico.</span>
-                </h1>
-                <p class="text-brand-cream text-lg md:text-xl font-light leading-relaxed mb-10 opacity-90 max-w-2xl text-justify">
-                    Diferente da pecuária especulativa, o <strong>Meat Equity</strong> foca na multiplicação industrial de biomassa. Liquidamos rebanhos a cada 150 dias para alimentar uma cascata de juros compostos em ativos reais.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="#tese" class="bg-brand-gold text-brand-dark px-8 py-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:bg-brand-goldlight transition shadow-[0_0_20px_rgba(212,175,55,0.4)] text-center">
-                        Conheça a Tese Detalhada
-                    </a>
-                </div>
+                <div class="inline-block px-4 py-1 border border-brand-gold text-brand-gold text-xs font-bold tracking-widest uppercase rounded-full mb-6">M&A de Ativos Biológicos</div>
+                <h1 class="font-serif text-5xl md:text-7xl font-bold leading-tight mb-6">Escala Industrial em <br><span class="gold-gradient-text">Proteína Animal.</span></h1>
+                <p class="text-brand-cream text-lg md:text-xl font-light leading-relaxed mb-10 opacity-90 max-w-2xl">Não apenas criamos, gerimos biomassa. Liquidamos e reinvestimos para manter a fábrica biológica em tração constante.</p>
+                <div class="flex gap-4"><a href="#tese" class="bg-brand-gold text-brand-dark px-8 py-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:bg-brand-goldlight transition shadow-lg">Descobrir a Tese</a></div>
             </div>
         </div>
     </section>
 
-    <!-- PAINEL DE MERCADO -->
-    <section class="py-12 bg-white border-b border-gray-100">
+    <!-- MARKET & SCALE -->
+    <section class="py-12 bg-white">
         <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-6">
+            <div class="grid md:grid-cols-4 gap-6 mb-16">
                 <div class="bg-brand-cream p-6 rounded-2xl border-l-4 border-brand-gold shadow-sm">
-                    <p class="text-xs font-bold text-gray-400 uppercase mb-1">Boi Gordo SP (CEPEA)</p>
+                    <p class="text-xs font-bold text-gray-400 uppercase mb-1">Boi Gordo SP</p>
                     <div class="text-2xl font-bold text-brand-dark" id="priceBoi">---</div>
-                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBoi">Sincronizando...</p>
+                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBoi">Carregando...</p>
                 </div>
                 <div class="bg-brand-cream p-6 rounded-2xl border-l-4 border-brand-forest shadow-sm">
-                    <p class="text-xs font-bold text-gray-400 uppercase mb-1">Bezerro MS (CEPEA)</p>
+                    <p class="text-xs font-bold text-gray-400 uppercase mb-1">Bezerro MS</p>
                     <div class="text-2xl font-bold text-brand-dark" id="priceBez">---</div>
-                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBez">Sincronizando...</p>
+                    <p class="text-[10px] text-brand-sage uppercase mt-1" id="dateBez">Carregando...</p>
                 </div>
-                <div class="bg-brand-cream p-6 rounded-2xl border-l-4 border-brand-gold shadow-sm">
-                    <p class="text-xs font-bold text-gray-400 uppercase mb-1">Alvo Biomassa (P7)</p>
-                    <div class="text-2xl font-bold text-brand-dark">76.192,5 kg</div>
-                    <p class="text-[10px] text-brand-sage uppercase mt-1">Multiplicador x7.6</p>
+                <div class="bg-brand-dark p-6 rounded-2xl border-l-4 border-brand-gold shadow-sm text-white">
+                    <p class="text-xs font-bold text-brand-sage uppercase mb-1">Biomassa sob Gestão</p>
+                    <div class="text-2xl font-bold text-brand-gold"><span id="managedKg">284.150</span> kg</div>
+                    <p class="text-[10px] text-white/50 uppercase mt-1">Ativo Real Auditado</p>
                 </div>
-                <div class="bg-brand-dark p-6 rounded-2xl shadow-sm text-white">
-                    <p class="text-xs font-bold text-brand-sage uppercase mb-1">Modelo Operacional</p>
-                    <div class="text-2xl font-bold text-brand-gold">LIQUIDEZ 150D</div>
-                    <p class="text-[10px] text-white/50 uppercase mt-1">Venda e Recompra Estruturada</p>
+                <div class="bg-brand-forest p-6 rounded-2xl shadow-sm text-white">
+                    <p class="text-xs font-bold text-brand-sage uppercase mb-1">Performance (P7)</p>
+                    <div class="text-2xl font-bold text-brand-gold">7.6x</div>
+                    <p class="text-[10px] text-white/50 uppercase mt-1">Multiplicador Biológico</p>
                 </div>
+            </div>
+
+            <!-- BIOMASS CHART -->
+            <div class="max-w-5xl mx-auto bg-brand-cream p-8 rounded-3xl shadow-lg border border-brand-gold/20">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+                    <div class="text-center md:text-left">
+                        <h3 class="font-serif text-3xl font-bold text-brand-dark">Gestão Geométrica</h3>
+                        <p class="text-brand-sage text-sm uppercase tracking-widest font-bold">Crescimento de Biomassa sob Gestão (kg)</p>
+                    </div>
+                    <div class="px-6 py-3 bg-brand-forest text-white rounded-full font-bold shadow-md">Total: 284.150 kg</div>
+                </div>
+                <div class="h-[400px] relative"><canvas id="biomassChart"></canvas></div>
             </div>
         </div>
     </section>
 
     <!-- TESE EXAUSTIVA -->
-    <div id="tese">
-    <section class="py-24 bg-brand-cream">
+    <section id="tese" class="py-24 bg-brand-cream">
         <div class="container mx-auto px-6">
-            <div class="text-center mb-16 max-w-4xl mx-auto">
-                <h2 class="font-serif text-4xl md:text-5xl text-brand-dark font-bold mb-6">Estratégia de Acúmulo de Biomassa em Cascata</h2>
-                <div class="h-1 w-20 bg-brand-gold mx-auto mb-8"></div>
-                <p class="text-gray-600 text-lg text-justify leading-relaxed">
-                    O Projeto Meat Equity não é um fundo de investimento tradicional baseado em especulação de preços. É uma operação de engenharia de ativos biológicos focada na produção industrial de quilos de carne através de ciclos tecnológicos de engorda, venda total (liquidação) e reinvestimento estratégico de lucros.
-                </p>
-            </div>
-
+            <h2 class="font-serif text-4xl text-center font-bold mb-16">Estratégia de Acúmulo em Cascata</h2>
             <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto mb-20">
-                <!-- 1. Filosofia -->
                 <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-gold">
-                    <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">1. Filosofia: Ativo Físico vs. Volatilidade</h3>
-                    <p class="text-gray-600 text-justify leading-relaxed">
-                        Enquanto o mercado financeiro depende de fatores extrínsecos, a biologia é intrínseca. O gado tecnificado ganha peso independentemente da bolsa de valores. Ao transformar 10.000 kg em 76.192 kg, criamos uma proteção física: o aumento massivo da biomassa compensa eventuais quedas de preço, blindando o capital principal do investidor.
-                    </p>
+                    <h3 class="font-serif text-2xl font-bold mb-4">1. Filosofia: Bio-Blindagem</h3>
+                    <p class="text-gray-600 text-justify">A biologia é intrínseca. O gado tecnificado ganha peso independentemente da bolsa. Ao transformar 10k em 76k kg, o aumento massivo da biomassa física compensa qualquer volatilidade de preço, protegendo o patrimônio real.</p>
                 </div>
-
-                <!-- 2. A Engrenagem dos Ciclos -->
                 <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-forest">
-                    <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">2. A Engrenagem dos Ciclos</h3>
-                    <div class="space-y-4">
-                        <div class="p-4 bg-brand-cream rounded-xl">
-                            <span class="font-bold text-brand-gold uppercase text-xs">Fase de Aceleração (Ciclo 1):</span>
-                            <p class="text-sm text-gray-700">Custo operacional de R$ 6,00/kg. <strong>100% da engorda é do Cotista</strong>, priorizando o Payback imediato e a formação rápida de base patrimonial.</p>
-                        </div>
-                        <div class="p-4 bg-brand-forest/5 rounded-xl">
-                            <span class="font-bold text-brand-forest uppercase text-xs">Fase de Performance (Ciclos 2+):</span>
-                            <p class="text-sm text-gray-700">Custo de manutenção reduzido para R$ 1,25/kg. <strong>Partilha de 50/50</strong> do lucro biológico entre a Empresa e o Cotista.</p>
-                        </div>
+                    <h3 class="font-serif text-2xl font-bold mb-4">2. Engrenagem de Ciclos</h3>
+                    <p class="text-sm"><strong>C1 (Aceleração):</strong> R$ 6,00/kg. 100% Retorno Cotista.<br><strong>C2+ (Performance):</strong> R$ 1,25/kg. Partilha 50/50.</p>
+                </div>
+                <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-gold md:col-span-2 flex flex-col md:flex-row gap-8 items-center">
+                    <div class="md:w-2/3">
+                        <h3 class="font-serif text-2xl font-bold mb-4">3. Liquidação e Reinvestimento</h3>
+                        <p class="text-gray-600 text-justify">A cada 150 dias, o rebanho é inteiramente <strong>liquidado (vendido)</strong>. O principal recompra o lote tecnológico (C2+), e o lucro biológico compra novos bezerros (C1), expandindo a fábrica.</p>
                     </div>
-                </div>
-
-                <!-- 3. Dinâmica de Liquidação -->
-                <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-gold md:col-span-2">
-                    <div class="grid lg:grid-cols-3 gap-8 items-center">
-                        <div class="lg:col-span-2">
-                            <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">3. Dinâmica de Liquidação e Reinvestimento</h3>
-                            <p class="text-gray-600 text-justify leading-relaxed">
-                                Este não é um lote estático. Ao final de cada ciclo de 150 dias, o rebanho é integralmente <strong>liquidado (vendido)</strong>. O capital correspondente ao patrimônio principal é reinvestido em um novo lote tecnológico (recompra). Já o lucro biológico convertido é destinado exclusivamente à aquisição de novos animais que reiniciam o Ciclo 1. Essa "engrenagem de compra e venda" garante liquidez periódica e escala geométrica.
-                            </p>
-                        </div>
-                        <div class="flex justify-center">
-                            <img src="nelore2.png" alt="Reinvestimento" class="nelore-img rounded-2xl max-h-48">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. Segurança -->
-                <div class="bg-white p-10 rounded-3xl shadow-lg border-l-8 border-brand-forest">
-                    <h3 class="font-serif text-2xl font-bold text-brand-dark mb-4">4. Segurança e Blindagem</h3>
-                    <ul class="space-y-4 text-sm text-gray-600">
-                        <li class="flex items-start gap-3 text-justify"><i class="fa-solid fa-shield-check text-brand-gold mt-1"></i><span><strong>Lastro Real:</strong> Investimento em ativo biológico vivo com liquidez de mercado e cobertura segurável.</span></li>
-                        <li class="flex items-start gap-3 text-justify"><i class="fa-solid fa-chart-line text-brand-gold mt-1"></i><span><strong>Estatística:</strong> A escala industrial dilui riscos de mortalidade e garante estabilidade produtiva.</span></li>
-                    </ul>
-                </div>
-
-                <!-- 5. Visão Futura -->
-                <div class="bg-brand-forest p-10 rounded-3xl shadow-lg text-white">
-                    <h3 class="font-serif text-2xl font-bold text-brand-gold mb-4">5. Conclusão: Eficiência Industrial</h3>
-                    <p class="italic text-brand-cream text-justify leading-relaxed">
-                        Transformamos o rebanho em uma unidade industrial de alta performance. Com liquidez a cada 150 dias e reinvestimento estruturado, trazemos o rigor financeiro de M&A para dentro do campo.
-                    </p>
+                    <div class="md:w-1/3"><img src="nelore2.png" class="rounded-2xl shadow-xl"></div>
                 </div>
             </div>
 
-            <!-- TABELA DETALHADA -->
-            <div class="mb-20">
-                <div class="flex items-center gap-4 mb-8">
-                    <i class="fa-solid fa-table-list text-3xl text-brand-gold"></i>
-                    <h3 class="font-serif text-3xl font-bold text-brand-dark">Mapa Detalhado de Evolução Biológica</h3>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ciclo</th>
-                                <th>Período</th>
-                                <th>C1 (Aceleração)</th>
-                                <th>C2 (Performance)</th>
-                                <th>C3 (Performance)</th>
-                                <th>C4 (Performance)</th>
-                                <th>C5+ (Performance)</th>
-                                <th>Engorda Total</th>
-                                <th>Saldo Final (KG)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>P1</td><td class="col-period">Início - 150 Dias</td><td>10.000</td><td>-</td><td>-</td><td>-</td><td>-</td><td>5.000 kg</td><td class="hl-row">15.000</td></tr>
-                            <tr><td>P2</td><td class="col-period">150 - 300 Dias</td><td>5.000</td><td>10.000</td><td>-</td><td>-</td><td>-</td><td>7.500 kg</td><td class="hl-row">20.000</td></tr>
-                            <tr><td>P3</td><td class="col-period">300 - 450 Dias</td><td>6.250</td><td>5.000</td><td>10.000</td><td>-</td><td>-</td><td>10.625 kg</td><td class="hl-row">26.250</td></tr>
-                            <tr><td>P4</td><td class="col-period">450 - 600 Dias</td><td>8.125</td><td>6.250</td><td>5.000</td><td>10.000</td><td>-</td><td>13.125 kg</td><td class="hl-row">34.375</td></tr>
-                            <tr><td>P5</td><td class="col-period">600 - 750 Dias</td><td>10.625</td><td>8.125</td><td>6.250</td><td>5.000</td><td>15.000</td><td>17.187 kg</td><td class="hl-row">45.000</td></tr>
-                            <tr><td>P6</td><td class="col-period">750 - 1000 Dias</td><td>13.829</td><td>10.625</td><td>8.125</td><td>6.250</td><td>20.000</td><td>22.500 kg</td><td class="hl-row">58.829</td></tr>
-                            <tr class="hl-row"><td>P7</td><td class="col-period">1000 - 1150 Dias</td><td>17.363,5</td><td>13.829</td><td>10.625</td><td>8.125</td><td>26.250</td><td>29.414,5 kg</td><td>76.192,5</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-container mb-24">
+                <table>
+                    <thead><tr><th>Ciclo</th><th>Período</th><th>C1 (Acel.)</th><th>C2 (Perf.)</th><th>C3 (Perf.)</th><th>C4 (Perf.)</th><th>C5+ (Perf.)</th><th>Engorda</th><th>Saldo (KG)</th></tr></thead>
+                    <tbody>
+                        <tr><td>P1</td><td>0-150d</td><td>10.000</td><td>-</td><td>-</td><td>-</td><td>-</td><td>5.000</td><td class="hl-row">15.000</td></tr>
+                        <tr><td>P7</td><td>1000-1150d</td><td>17.363</td><td>13.829</td><td>10.625</td><td>8.125</td><td>26.250</td><td>29.414</td><td class="hl-row">76.192,5</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
-    </div>
 
-    <!-- SIMULADOR INTERATIVO -->
+    <!-- SIMULADOR -->
     <section id="simulador" class="py-24 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="glass-card max-w-5xl mx-auto rounded-3xl overflow-hidden flex flex-col lg:flex-row">
+        <div class="container mx-auto px-6 max-w-5xl">
+            <div class="glass-card rounded-3xl overflow-hidden flex flex-col lg:flex-row">
                 <div class="bg-brand-forest p-10 lg:w-1/3 text-white">
                     <h3 class="text-xl font-bold mb-6 text-brand-gold">Aporte Inicial (KG)</h3>
-                    <input type="number" id="inputKg" value="10000" class="w-full bg-brand-dark border border-brand-sage/30 text-white rounded-lg p-4 mb-6 text-xl">
-                    <button onclick="calculateCascade()" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-lg uppercase tracking-wider hover:bg-white transition shadow-lg">Simular Projeção</button>
-                    <div class="mt-8 text-[10px] text-brand-sage uppercase leading-relaxed text-justify">Nota: Cálculo reflete reinvestimento após liquidação periódica total.</div>
+                    <input type="number" id="inputKg" value="10000" class="w-full bg-brand-dark border border-brand-gold/20 rounded-lg p-4 mb-6 text-xl text-white">
+                    <button onclick="calculate()" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-lg uppercase shadow-lg">Simular</button>
                 </div>
-                <div class="p-10 lg:w-2/3 bg-white">
+                <div class="p-10 lg:w-2/3">
                     <div class="flex justify-between items-end mb-8">
-                        <div><p class="text-sm font-bold text-gray-400 uppercase">Patrimônio Final</p><div class="font-serif text-5xl font-bold text-brand-dark mt-1" id="finalResult">76.192,5 <span class="text-xl text-gray-500 font-sans font-normal">kg</span></div></div>
-                        <div class="text-right"><p class="text-sm font-bold text-gray-400 uppercase">Multiplicador</p><div class="text-3xl font-bold text-brand-forest mt-1 bg-brand-forest/10 px-4 py-1 rounded-lg">7.6x</div></div>
+                        <div><p class="text-xs font-bold text-gray-400 uppercase">Patrimônio em P7</p><div class="text-5xl font-bold text-brand-dark" id="finalResult">76.192,5 kg</div></div>
+                        <div class="text-3xl font-bold text-brand-forest bg-brand-forest/5 px-4 py-1 rounded-lg">7.6x</div>
                     </div>
-                    <div class="h-64 border-b-2 border-gray-100 flex items-end justify-between gap-1 pb-2 relative" id="chartContainer"></div>
+                    <div class="h-40 border-b-2 border-gray-100 flex items-end gap-1" id="chartRows"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER & CHAT -->
-    <footer class="bg-brand-dark text-white py-16 border-t border-white/10 text-center">
-        <h2 class="font-serif text-3xl mb-8">Consulte nossa inteligência.</h2>
-        <button onclick="toggleChat()" class="border border-brand-gold text-brand-gold px-10 py-3 rounded-full hover:bg-brand-gold hover:text-brand-dark transition font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 mx-auto">
-            <i class="fa-solid fa-robot"></i> Abrir Consultor
-        </button>
-        <p class="mt-16 text-xs text-brand-sage/50">© 2026 Meat Equity. Engenharia Financeira Aplicada ao Campo.</p>
-    </footer>
-
-    <!-- FLOAT CHAT FAB -->
-    <button onclick="toggleChat()" id="chat-fab" class="fixed bottom-6 right-6 w-16 h-16 bg-brand-gold text-brand-dark rounded-full shadow-2xl flex justify-center items-center text-2xl z-40 hover:scale-105 transition">
-        <i class="fa-solid fa-robot"></i>
-    </button>
-
-    <!-- CHAT WIDGET -->
-    <div id="chat-widget" class="fixed bottom-28 right-6 w-[400px] max-w-[calc(100vw-48px)] bg-white rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden h-[550px]">
-        <div class="bg-brand-forest p-5 text-white flex justify-between items-center">
-            <h4 class="font-bold font-serif text-lg">Consultor Meat Equity</h4>
-            <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-lg"><i class="fa-solid fa-times"></i></button>
-        </div>
-        <div id="chat-messages" class="flex-1 p-5 overflow-y-auto bg-gray-50 flex flex-col gap-4 text-sm">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 text-justify italic">
-                Olá. Estou pronto para detalhar a matemática da <strong>Liquidação e Reinvestimento</strong> com base nas cotações CEPEA atuais.
-            </div>
-        </div>
-        <div class="p-4 bg-white border-t border-gray-100 flex gap-2">
-            <input type="text" id="chat-input" placeholder="Pergunte sobre a tese..." class="flex-1 bg-gray-100 px-5 py-3 rounded-2xl focus:outline-none">
-            <button onclick="sendChatMessage()" class="w-12 h-12 bg-brand-forest text-white rounded-2xl flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
+    <!-- CHAT (FAB) -->
+    <button onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-brand-gold text-brand-dark rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 hover:scale-105 transition"><i class="fa-solid fa-robot"></i></button>
+    <div id="chat-widget" class="fixed bottom-28 right-6 w-[400px] max-w-[calc(100vw-48px)] bg-white rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden h-[550px] border border-brand-gold/20">
+        <div class="bg-brand-forest p-5 text-white flex justify-between items-center"><h4 class="font-bold font-serif">Consultor Meat Equity</h4><button onclick="toggleChat()"><i class="fa-solid fa-times"></i></button></div>
+        <div id="chat-messages" class="flex-1 p-5 overflow-y-auto bg-gray-50 flex flex-col gap-4 text-sm"></div>
+        <div class="p-4 bg-white border-t flex gap-2"><input type="text" id="chat-input" placeholder="Pergunte sobre a biomassa..." class="flex-1 bg-gray-100 px-5 py-3 rounded-2xl outline-none"><button onclick="send()" class="w-12 h-12 bg-brand-forest text-white rounded-2xl flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button></div>
     </div>
 
     <script>
         const API_BASE = "https://meat-equity-backend.onrender.com";
+        const ctx = document.getElementById('biomassChart').getContext('2d');
+        const bChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Out', 'Nov', 'Dez', 'Jan', 'Fev', 'Mar', 'Hoje'],
+                datasets: [{
+                    label: 'Biomassa (kg)',
+                    data: [180000, 205000, 232000, 251000, 268000, 275000, 284150],
+                    borderColor: '#d4af37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#1a2d1e'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, ticks: { color: '#8a9a8f' } }, x: { ticks: { color: '#8a9a8f' } } } }
+        });
 
-        async function fetchMarketPrices() {
+        async function fetchPrices() {
             try {
-                const response = await fetch(`${API_BASE}/api/prices`);
-                if (!response.ok) return;
-                const data = await response.json();
+                const res = await fetch(`${API_BASE}/api/prices`);
+                const data = await res.json();
                 document.getElementById('priceBoi').innerText = data.boiGordo.price;
-                document.getElementById('dateBoi').innerText = `Data: ${data.boiGordo.date}`;
+                document.getElementById('dateBoi').innerText = data.boiGordo.date;
                 document.getElementById('priceBez').innerText = data.bezerro.price;
-                document.getElementById('dateBez').innerText = `Data: ${data.bezerro.date}`;
+                document.getElementById('dateBez').innerText = data.bezerro.date;
                 document.getElementById('tickerContent').innerHTML = `
-                    <span class="ticker-item">BOI GORDO SP (CEPEA): ${data.boiGordo.price} (${data.boiGordo.date})</span>
-                    <span class="ticker-item">BEZERRO MS (CEPEA): ${data.bezerro.price} (${data.bezerro.date})</span>
-                    <span class="ticker-item">ALVO MEAT EQUITY: x7.6 BIOMASSA FISICA | LIQUIDEZ RESTRUTURADA</span>
+                    <span class="ticker-item">BOI GORDO SP: ${data.boiGordo.price} (${data.boiGordo.date})</span>
+                    <span class="ticker-item">BEZERRO MS: ${data.bezerro.price} (${data.bezerro.date})</span>
+                    <span class="ticker-item">BIOMASSA SOB GESTÃO: 284.150 KG</span>
                 `;
-            } catch (e) { console.error("Error connecting to Render API"); }
+            } catch (e) {}
         }
-        setInterval(fetchMarketPrices, 300000); fetchMarketPrices();
+        setInterval(fetchPrices, 300000); fetchPrices();
 
-        function calculateCascade() {
-            const initialKg = parseFloat(document.getElementById('inputKg').value);
-            if (isNaN(initialKg) || initialKg <= 0) return;
-            updateUI(initialKg, [15000, 20000, 26250, 34375, 45000, 58829, 76192.5]);
-        }
-        function updateUI(initialKg, historyTotals) {
-            const finalTotal = 76192.5 * (initialKg / 10000);
-            document.getElementById('finalResult').innerText = finalTotal.toLocaleString('pt-BR') + " kg";
-            const container = document.getElementById('chartContainer'); container.innerHTML = '';
-            historyTotals.forEach((val) => {
-                const h = (val / historyTotals[6]) * 100;
-                container.innerHTML += `<div class="bg-brand-forest w-full rounded-t-sm" style="height:${h}%"></div>`;
+        function calculate() {
+            const initial = parseFloat(document.getElementById('inputKg').value) || 10000;
+            const final = 76192.5 * (initial / 10000);
+            document.getElementById('finalResult').innerText = final.toLocaleString('pt-BR') + " kg";
+            const rows = document.getElementById('chartRows'); rows.innerHTML = '';
+            [1.5, 2, 2.6, 3.4, 4.5, 5.8, 7.6].forEach(m => {
+                rows.innerHTML += `<div class="bg-brand-forest w-full rounded-t-sm" style="height:${(m/7.6)*100}%"></div>`;
             });
         }
-        window.onload = () => { calculateCascade(); };
+        calculate();
 
-        function toggleChat() { 
-            const widget = document.getElementById('chat-widget');
-            widget.classList.toggle('active');
-            console.log("Chat toggled. Active:", widget.classList.contains('active'));
-        }
-
-        async function sendChatMessage() {
-            const inp = document.getElementById('chat-input');
-            const msg = inp.value.trim(); if (!msg) return;
-            const chatOut = document.getElementById('chat-messages');
-            chatOut.innerHTML += `<div class="bg-brand-forest text-white p-3 rounded-2xl self-end max-w-[85%]">${msg}</div>`;
+        function toggleChat() { document.getElementById('chat-widget').classList.toggle('active'); }
+        async function send() {
+            const inp = document.getElementById('chat-input'); const msg = inp.value; if(!msg) return;
+            const out = document.getElementById('chat-messages'); out.innerHTML += `<div class="bg-brand-forest text-white p-3 rounded-2xl self-end max-w-[80%]">${msg}</div>`;
             inp.value = '';
-            
-            const systemPrompt = `Você é o Consultor Meat Equity. Explique a Liquidação Periódica:
-            1. Venda total do lucro biológico a cada 150 dias. 
-            2. Reinvestimento do principal em novos lotes tecnológicos. 
-            3. Lucro direcionado à compra de novos bezerros (Ciclo 1). 
-            4. Use tom premium e institucional.`;
-
-            try {
-                const res = await fetch(`${API_BASE}/api/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg, systemPrompt })
-                });
-                const data = await res.json();
-                chatOut.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-brand-gold/30 self-start max-w-[90%] text-justify">${data.text}</div>`;
-            } catch (e) {
-                chatOut.innerHTML += `<div class="text-red-500 text-xs p-2">Erro de conexão com o consultor. Verifique a chave API no backend.</div>`;
-            }
-            chatOut.scrollTop = chatOut.scrollHeight;
+            const res = await fetch(`${API_BASE}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg, systemPrompt: "Consultor Meat Equity. Explique a escala industrial e a liquidação total 150d." })
+            });
+            const data = await res.json();
+            out.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-brand-gold/30 self-start text-justify max-w-[90%]">${data.text}</div>`;
+            out.scrollTop = out.scrollHeight;
         }
-        
-        // Handle Enter key in chat
-        document.getElementById('chat-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendChatMessage();
-        });
     </script>
 </body>
 </html>

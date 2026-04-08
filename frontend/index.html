@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meat Equity | Ativos Biológicos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0a120c',
+                            forest: '#1a2d1e',
+                            gold: '#d4af37',
+                            goldlight: '#e5c158',
+                            sage: '#8a9a8f',
+                            cream: '#f9f6f0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f9f6f0; color: #333; }
+        
+        .hero-section {
+            position: relative;
+            background-color: #0a120c;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero-image-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1a2d1e;
+            overflow: hidden;
+        }
+        
+        /* Efeito de overlay escuro para leitura */
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(10,18,12,0.95) 0%, rgba(26,45,30,0.7) 100%);
+            z-index: 1;
+        }
+
+        .content-z { position: relative; z-index: 10; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(to right, #d4af37, #f3e5ab);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Chart Bar Animations */
+        .bar-grow {
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: bottom;
+        }
+
+        /* Chatbot UI */
+        #chat-widget {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(120%) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #chat-widget.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .loader-dots div {
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+        .loader-dots div:nth-child(1) { left: 8px; animation: loader-dots1 0.6s infinite; }
+        .loader-dots div:nth-child(2) { left: 8px; animation: loader-dots2 0.6s infinite; }
+        .loader-dots div:nth-child(3) { left: 32px; animation: loader-dots2 0.6s infinite; }
+        .loader-dots div:nth-child(4) { left: 56px; animation: loader-dots3 0.6s infinite; }
+        @keyframes loader-dots1 { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        @keyframes loader-dots3 { 0% { transform: scale(1); } 100% { transform: scale(0); } }
+        @keyframes loader-dots2 { 0% { transform: translate(0, 0); } 100% { transform: translate(24px, 0); } }
+
+        /* Justified text */
+        .text-justify {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section min-h-screen flex items-center pt-20 pb-20 relative">
+        <div class="hero-image-container">
+            <div class="text-brand-sage opacity-20 text-center w-full h-full flex flex-col justify-center items-center p-8 bg-brand-forest">
+                <i class="fa-solid fa-image text-6xl mb-4"></i>
+                <span class="text-xl tracking-widest"></span>
+            </div>
+        </div>
+        <div class="hero-overlay"></div>
+        
+        <div class="container mx-auto px-6 content-z">
+            <div class="max-w-3xl">
+                <div class="inline-block px-4 py-1 border border-brand-gold text-brand-gold text-xs font-bold tracking-widest uppercase rounded-full mb-6">
+                    Engenharia de Ativos Biológicos
+                </div>
+                <h1 class="font-serif text-5xl md:text-7xl font-bold leading-tight mb-6">
+                    A Evolução do <br><span class="gold-gradient-text">Patrimônio Físico.</span>
+                </h1>
+                <p class="text-brand-cream text-lg md:text-xl font-light leading-relaxed mb-10 opacity-90 max-w-2xl text-justify">
+                    Diferente da pecuária especulativa baseada na arroba, o <strong>Meat Equity</strong> foca na multiplicação acelerada de biomassa. Transformamos rebanhos em verdadeiras máquinas de juros compostos com risco mitigado.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#tese" class="bg-brand-gold text-brand-dark px-8 py-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:bg-brand-goldlight transition shadow-[0_0_20px_rgba(212,175,55,0.4)] text-center">
+                        Conheça a Tese
+                    </a>
+                    <a href="#simulador" class="border border-white text-white px-8 py-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:bg-white hover:text-brand-dark transition text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> Simular Expansão
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- A TESE (COMO FUNCIONA) -->
+    <section id="tese" class="py-24 bg-brand-cream">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 max-w-3xl mx-auto">
+                <h2 class="font-serif text-4xl text-brand-dark font-bold mb-4">A Engrenagem da Biomassa</h2>
+                <div class="h-1 w-20 bg-brand-gold mx-auto mb-6"></div>
+                <p class="text-gray-600 text-lg">Nosso modelo de gestão separa o desenvolvimento do ativo em dois estágios distintos, desenhados para proteger o seu capital e financiar a tecnologia do rebanho de forma sustentável.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                
+                <!-- Fase 1 -->
+                <div class="bg-white rounded-2xl p-10 shadow-lg border-t-4 border-brand-forest relative overflow-hidden group hover:shadow-2xl transition">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-forest opacity-5 rounded-bl-[100px] z-0"></div>
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-brand-forest text-brand-gold rounded-full flex items-center justify-center text-2xl mb-6 shadow-md">
+                            1
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-brand-dark mb-2">Fase de Aceleração <span class="text-sm font-sans text-brand-sage ml-2 uppercase tracking-wider font-semibold border border-brand-sage px-2 py-1 rounded">Ciclo 1</span></h3>
+                        <p class="text-brand-gold font-semibold mb-6">O Motor do Payback.</p>
+                        
+                        <ul class="space-y-4 text-gray-600 text-justify">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-brand-forest mt-1 mr-3"></i>
+                                <span><strong>Custo Estrutural:</strong> R$ 6,00/kg (Cobre genética superior, nutrição de alta performance e reserva tecnológica).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-star text-brand-gold mt-1 mr-3"></i>
+                                <span><strong>A Regra de Ouro:</strong> 100% da engorda deste ciclo pertence integralmente a você.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-shield-halved text-brand-forest mt-1 mr-3"></i>
+                                <span><strong>Objetivo:</strong> A empresa abre mão da margem para garantir que você atinja o retorno (Payback) no menor tempo possível e forme sua base patrimonial.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Fase 2 -->
+                <div class="bg-white rounded-2xl p-10 shadow-lg border-t-4 border-brand-gold relative overflow-hidden group hover:shadow-2xl transition">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-gold opacity-10 rounded-bl-[100px] z-0"></div>
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-brand-gold text-brand-dark rounded-full flex items-center justify-center text-2xl mb-6 shadow-md">
+                            2
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-brand-dark mb-2">Expansão em Cascata <span class="text-sm font-sans text-brand-sage ml-2 uppercase tracking-wider font-semibold border border-brand-sage px-2 py-1 rounded">Ciclo 2+</span></h3>
+                        <p class="text-brand-forest font-semibold mb-6">A Máquina de Juros Compostos.</p>
+                        
+                        <ul class="space-y-4 text-gray-600 text-justify">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-arrow-down text-brand-gold mt-1 mr-3"></i>
+                                <span><strong>Custo Reduzido:</strong> R$ 3,00/kg. Como a tecnologia já foi aplicada no lote, a manutenção se torna barata e altamente eficiente.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-handshake text-brand-forest mt-1 mr-3"></i>
+                                <span><strong>Partilha (50/50):</strong> O lucro da nova engorda é dividido. A Empresa usa sua parte para reinvestir em P&D e manter o ativo seguro.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-retweet text-brand-gold mt-1 mr-3"></i>
+                                <span><strong>Reinvestimento:</strong> Toda a sua parte do lucro compra novos bezerros que entram no <em>Ciclo 1</em>, criando uma cascata infinita de acúmulo de biomassa.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOTO INTERMEDIÁRIA -->
+    <section class="py-20 bg-brand-forest relative flex justify-center items-center overflow-hidden min-h-[400px]">
+        <div class="absolute inset-0 z-0 flex items-center justify-center bg-brand-dark">
+             <div class="text-brand-sage opacity-20 text-center w-full h-full flex flex-col justify-center items-center p-8">
+                <i class="fa-solid fa-image text-6xl mb-4"></i>
+                <span class="text-xl tracking-widest"></span>
+            </div>
+        </div>
+        <div class="absolute inset-0 bg-brand-forest/80 z-10 mix-blend-multiply"></div>
+        <div class="container mx-auto px-6 relative z-20 text-center">
+            <h2 class="font-serif text-3xl md:text-5xl text-white font-bold mb-6">De 10.000 kg para 76.192 kg.</h2>
+            <p class="text-brand-cream text-xl font-light max-w-2xl mx-auto text-justify">Em aproximadamente 3 anos (7 ciclos), seu estoque inicial se multiplica em mais de 7,6 vezes, blindando seu patrimônio contra a inflação.</p>
+        </div>
+    </section>
+
+    <!-- SIMULADOR INTERATIVO (Calculadora IA) -->
+    <section id="simulador" class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 max-w-3xl mx-auto">
+                <h2 class="font-serif text-4xl text-brand-dark font-bold mb-4">Simulador de Cascata Patrimonial</h2>
+                <div class="h-1 w-20 bg-brand-gold mx-auto mb-6"></div>
+                <p class="text-gray-600">Insira seu aporte inicial estimado em quilos. Nosso algoritmo projetará o crescimento geométrico do seu estoque ao longo de 7 ciclos de engorda (aprox. 1.150 dias).</p>
+            </div>
+
+            <div class="glass-card max-w-5xl mx-auto rounded-3xl overflow-hidden flex flex-col lg:flex-row">
+                
+                <!-- Inputs -->
+                <div class="bg-brand-forest p-10 lg:w-1/3 text-white flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-6 text-brand-gold"><i class="fa-solid fa-sliders mr-2"></i> Parâmetros</h3>
+                    
+                    <label class="block text-sm text-brand-sage font-bold uppercase tracking-wider mb-2">Aporte Inicial (KG)</label>
+                    <input type="number" id="inputKg" value="10000" class="w-full bg-brand-dark border border-brand-sage/30 text-white rounded-lg p-4 mb-8 text-xl focus:outline-none focus:border-brand-gold transition font-serif">
+                    
+                    <div class="bg-brand-dark/50 p-4 rounded-lg border border-brand-sage/20 mb-8">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-brand-sage">Ganho/Ciclo:</span>
+                            <span class="font-bold text-brand-gold">+50% Biomassa</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-brand-sage">Ciclo 1:</span>
+                            <span class="font-bold text-white">100% Cotista</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-brand-sage">Ciclo 2+:</span>
+                            <span class="font-bold text-white">Partilha 50/50</span>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateCascade()" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-lg uppercase tracking-wider hover:bg-white transition flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i> Projetar Cenário
+                    </button>
+                </div>
+
+                <!-- Outputs / Chart -->
+                <div class="p-10 lg:w-2/3 bg-white">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <p class="text-sm font-bold text-gray-400 uppercase tracking-wider">Saldo Projetado (Dia 1150)</p>
+                            <div class="font-serif text-5xl font-bold text-brand-dark mt-1" id="finalResult">76.192 <span class="text-xl text-gray-500 font-sans font-normal">kg</span></div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-gray-400 uppercase tracking-wider">Multiplicador</p>
+                            <div class="text-3xl font-bold text-brand-forest mt-1 bg-brand-forest/10 px-4 py-1 rounded-lg inline-block" id="multiplierResult">7.6x</div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Chart -->
+                    <div class="h-64 border-b-2 border-gray-100 flex items-end justify-between gap-2 pb-2 relative" id="chartContainer">
+                        <!-- Bars generated by JS -->
+                    </div>
+                    
+                    <div class="flex justify-between mt-4 text-xs font-bold text-gray-400 uppercase">
+                        <span>P1<br><span class="font-normal text-gray-300">150d</span></span>
+                        <span>P2<br><span class="font-normal text-gray-300">300d</span></span>
+                        <span>P3<br><span class="font-normal text-gray-300">450d</span></span>
+                        <span>P4<br><span class="font-normal text-gray-300">600d</span></span>
+                        <span>P5<br><span class="font-normal text-gray-300">750d</span></span>
+                        <span>P6<br><span class="font-normal text-gray-300">1000d</span></span>
+                        <span>P7<br><span class="font-normal text-brand-forest font-bold">1150d</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER / CTA -->
+    <footer class="bg-brand-dark text-white py-16 border-t border-white/10">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="font-serif text-3xl mb-6">Pronto para blindar seu patrimônio?</h2>
+            <p class="text-brand-sage mb-10 max-w-2xl mx-auto text-justify">Fale com nossa equipe de originação para entender as cotas disponíveis no próximo lote tecnológico.</p>
+            <button onclick="toggleChat()" class="border border-brand-gold text-brand-gold px-8 py-3 rounded-full hover:bg-brand-gold hover:text-brand-dark transition font-bold uppercase tracking-wider text-sm inline-flex items-center gap-3">
+                <i class="fa-solid fa-comment-dots text-lg"></i> Falar com o Consultor IA
+            </button>
+            <p class="mt-16 text-xs text-brand-sage/50">© 2026 Meat Equity. Uma operação de ativos biológicos.</p>
+        </div>
+    </footer>
+
+    <!-- FAB (Floating Action Button for Chat) -->
+    <button onclick="toggleChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-brand-gold text-brand-dark rounded-full shadow-[0_10px_25px_rgba(212,175,55,0.4)] flex justify-center items-center text-2xl hover:scale-105 transition z-40">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <!-- IA CHAT WIDGET -->
+    <div id="chat-widget" class="fixed bottom-28 right-6 w-[380px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden border border-gray-200 h-[500px]">
+        <!-- Header -->
+        <div class="bg-brand-forest p-4 text-white flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-gold/20 text-brand-gold rounded-full flex justify-center items-center">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold font-serif leading-tight">Consultor Meat Equity</h4>
+                    <p class="text-[10px] text-brand-sage uppercase tracking-wider">Powered by Gemini AI</p>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-white/50 hover:text-white transition p-2">
+                <i class="fa-solid fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Messages -->
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-4 text-sm">
+            <div class="bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-gray-100 self-start max-w-[85%] text-gray-700 text-justify">
+                Olá! Sou o especialista em engenharia biológica do Projeto Meat Equity. 
+                <br><br>Gostaria de entender melhor como o <strong>Ciclo 1 acelera seu Payback</strong> ou como a <strong>Cascata Multiplica seu saldo</strong>?
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="p-3 bg-white border-t border-gray-100 flex gap-2 items-center">
+            <input type="text" id="chat-input" placeholder="Faça sua pergunta sobre a tese..." class="flex-1 bg-gray-100 border-none px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-gold transition text-gray-700">
+            <button onclick="sendChatMessage()" class="w-12 h-12 bg-brand-forest text-white rounded-xl hover:bg-brand-dark transition flex justify-center items-center">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* === CALCULADORA DE CASCATA BIOLÓGICA === */
+        
+        function calculateCascade() {
+            const initialKg = parseFloat(document.getElementById('inputKg').value);
+            if (isNaN(initialKg) || initialKg <= 0) return;
+
+            // Arrays to hold the state of cattle in each cycle phase.
+            // state[0] = Ciclo 1 (100% Cotista)
+            // state[1] = Ciclo 2 (Partilha)
+            // state[2] = Ciclo 3 (Partilha), etc.
+            let state = [initialKg, 0, 0, 0, 0, 0, 0, 0];
+            let historyTotals = [];
+
+            // Run 7 cycles (1150 days)
+            for (let cycle = 1; cycle <= 7; cycle++) {
+                // 1. Calculate weight gain (50% per phase)
+                let engordaC1 = state[0] * 0.5;
+                let engordaPartilha = 0;
+                for (let j = 1; j < state.length; j++) {
+                    engordaPartilha += state[j] * 0.5;
+                }
+
+                // 2. Distribute gains according to Meat Equity Rules
+                // Cotista gets 100% of C1 gain + 50% of Partilha gain. This is reinvested into a new C1.
+                let cotistaReinvests = engordaC1 + (engordaPartilha / 2);
+
+                // 3. Shift the cascades (Animals move to next phase)
+                let nextState = [0, 0, 0, 0, 0, 0, 0, 0];
+                nextState[0] = cotistaReinvests; // New animals go to C1
+                nextState[1] = state[0];         // C1 moves to C2
+                nextState[2] = state[1];         // C2 moves to C3
+                nextState[3] = state[2];
+                nextState[4] = state[3];
+                nextState[5] = state[4];
+                nextState[6] = state[5];
+                nextState[7] = state[6] + state[7]; // C7+ accumulates
+
+                state = nextState;
+                
+                // 4. Calculate total Patrimony for the Cotista
+                let currentTotal = state.reduce((a, b) => a + b, 0);
+                historyTotals.push(currentTotal);
+            }
+
+            updateUI(initialKg, historyTotals);
+        }
+
+        function updateUI(initialKg, historyTotals) {
+            const finalTotal = historyTotals[historyTotals.length - 1];
+            const multiplier = (finalTotal / initialKg).toFixed(1);
+
+            // Animate Numbers
+            animateValue("finalResult", 0, finalTotal, 1000, " kg");
+            document.getElementById('multiplierResult').innerText = multiplier + "x";
+
+            // Draw Chart
+            const chartContainer = document.getElementById('chartContainer');
+            chartContainer.innerHTML = ''; // Clear old
+
+            const maxVal = finalTotal;
+
+            historyTotals.forEach((val, index) => {
+                const heightPct = (val / maxVal) * 100;
+                
+                // Determine color based on index (last one is gold)
+                const isLast = index === historyTotals.length - 1;
+                const bgColor = isLast ? 'bg-brand-gold' : 'bg-brand-forest';
+                
+                const barHtml = `
+                    <div class="relative flex flex-col justify-end items-center flex-1 h-full group">
+                        <div class="absolute -top-8 text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+                            ${Math.round(val).toLocaleString('pt-BR')} kg
+                        </div>
+                        <div class="w-full mx-1 ${bgColor} rounded-t-sm bar-grow" style="height: 0%;" data-target="${heightPct}%"></div>
+                    </div>
+                `;
+                chartContainer.innerHTML += barHtml;
+            });
+
+            // Trigger Animation
+            setTimeout(() => {
+                const bars = document.querySelectorAll('.bar-grow');
+                bars.forEach(bar => {
+                    bar.style.height = bar.getAttribute('data-target');
+                });
+            }, 50);
+        }
+
+        function animateValue(id, start, end, duration, suffix = "") {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentVal = Math.floor(progress * (end - start) + start);
+                // format with dots
+                obj.innerHTML = currentVal.toLocaleString('pt-BR') + `<span class="text-xl text-gray-500 font-sans font-normal">${suffix}</span>`;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Initialize chart on load
+        window.onload = () => { calculateCascade(); };
+
+
+        /* === CONSULTOR GEMINI IA (PROXY) === */
+
+        // Replace with your Render backend URL when deployed
+        const BACKEND_URL = "/api/chat"; 
+
+        function toggleChat() {
+            document.getElementById('chat-widget').classList.toggle('active');
+        }
+
+        async function fetchGeminiAPI(prompt, systemPrompt) {
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: prompt, systemPrompt })
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                return data.text || "Desculpe, não consegui formular a resposta. Pode tentar novamente?";
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                throw error;
+            }
+        }
+
+        async function sendChatMessage() {
+            const inputField = document.getElementById('chat-input');
+            const message = inputField.value.trim();
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chat-messages');
+
+            // 1. Add User Message
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.className = "bg-brand-forest text-white p-3 rounded-xl rounded-tr-none shadow-sm self-end max-w-[85%] text-sm";
+            userMsgDiv.innerText = message;
+            chatMessages.appendChild(userMsgDiv);
+            inputField.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 2. Add Loading Indicator
+            const loaderDiv = document.createElement('div');
+            loaderDiv.className = "bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-gray-100 self-start max-w-[85%]";
+            loaderDiv.innerHTML = `
+                <div class="loader-dots relative w-16 h-4">
+                    <div class="absolute top-1 w-2 h-2 rounded-full bg-brand-gold"></div>
+                    <div class="absolute top-1 w-2 h-2 rounded-full bg-brand-gold"></div>
+                    <div class="absolute top-1 w-2 h-2 rounded-full bg-brand-gold"></div>
+                    <div class="absolute top-1 w-2 h-2 rounded-full bg-brand-gold"></div>
+                </div>
+            `;
+            chatMessages.appendChild(loaderDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 3. Call API
+            const systemPrompt = `Você é o Consultor de Relações com Investidores do "Projeto Meat Equity", um investimento de elite em agropecuária (ativos biológicos).
+            Regras do seu discurso:
+            1. Seja polido, extremamente elegante, didático e profissional (nível M&A/Private Equity).
+            2. O projeto é uma "Fábrica de Biomassa em Cascata".
+            3. Fase de Aceleração (Ciclo 1): Custo é R$ 6,00 por kg inicial. A engorda é 100% do Cotista (Foco em PAYBACK).
+            4. Fase de Performance (Ciclos 2 em diante): Custo é R$ 3,00 por kg. A engorda (lucro) é dividida 50/50 entre a Empresa e o Cotista.
+            5. O gado ganha 50% de peso a cada ciclo de 150 dias. 
+            6. O lucro do Cotista é SEMPRE reinvestido na Fase de Aceleração (novos animais).
+            Responda de forma concisa e persuasiva em português.`;
+
+            try {
+                const responseText = await fetchGeminiAPI(message, systemPrompt);
+                
+                // Format response (convert markdown bold to HTML)
+                const formattedText = responseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Replace loader with response
+                loaderDiv.innerHTML = formattedText;
+                loaderDiv.className = "bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-brand-gold/30 self-start max-w-[90%] text-gray-700 text-sm leading-relaxed text-justify";
+            } catch (error) {
+                loaderDiv.innerHTML = "Ocorreu um erro de comunicação com nossos servidores. Por favor, tente novamente.";
+                loaderDiv.className = "bg-red-50 text-red-600 p-4 rounded-xl rounded-tl-none border border-red-200 self-start max-w-[85%] text-sm";
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Allow 'Enter' key to send message
+        document.getElementById('chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+    </script>
+</body>
+</html>
